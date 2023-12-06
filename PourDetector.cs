@@ -6,8 +6,7 @@ public class PourDetector : MonoBehaviour
     public int pourThreshold = 25;
     public Transform origin = null;
     public GameObject streamPrefab = null;
-    public GameObject obj1;
-    public GameObject obj2;
+
     private bool isPouring = false;
     private Stream currentStream = null;
     private float pourStartTime = 0.0f;
@@ -34,7 +33,6 @@ public class PourDetector : MonoBehaviour
         if (isPouring)
         {
             UpdatePourDuration();
-            CheckPourOnWound();
         }
     }
 
@@ -68,30 +66,8 @@ public class PourDetector : MonoBehaviour
 
         if (elapsedPourTime >= pourDuration)
         {
-            CheckPourDuration();
+            EndPour();
+            // Здесь вызывайте трансформации объекта, если необходимо
+            // Например, создание нового объекта и уничтожение старого
         }
     }
-
-    private void CheckPourDuration()
-    {
-        // Здесь вызывайте трансформации объекта, если необходимо
-        // Например, создание нового объекта и уничтожение старого
-        obj1.SetActive(false);
-        obj2.SetActive(true);
-    }
-
-    private void CheckPourOnWound()
-    {
-        RaycastHit hit;
-        Ray ray = new Ray(currentStream.transform.position, Vector3.down);
-
-        if (Physics.Raycast(ray, out hit, 2.0f))
-        {
-            if (hit.collider.CompareTag("BurnWoundTag"))
-            {
-                Debug.Log("Жидкость попала в область раны!");
-                // Здесь можете выполнить необходимые действия, например, уведомить, что оказание помощи произошло
-            }
-        }
-    }
-}

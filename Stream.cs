@@ -7,13 +7,21 @@ public class Stream : MonoBehaviour
     private Vector3 targetPosition = Vector3.zero;
     private Coroutine pourRoutine = null;
     private ParticleSystem splashParticle = null;
+    private AudioSource waterSoundSource;
+    private AudioClip waterSoundClip;
     private PourDetector pourDetector;
+
+    private bool isPouringOverWound = false;
 
     private void Awake()
     {
         lineRenderer = GetComponent<LineRenderer>();
         splashParticle = GetComponentInChildren<ParticleSystem>();
-
+        waterSoundSource = GetComponent<AudioSource>();
+        // Assign your water sound clip
+        // waterSoundClip = YourAudioClip;
+        waterSoundSource.clip = waterSoundClip;
+        waterSoundSource.loop = true;
     }
 
     private void Start()
@@ -34,6 +42,10 @@ public class Stream : MonoBehaviour
         {
             targetPosition = FindEndPoint();
             MoveToPosition(0, transform.position);
+
+            // Проверка, что текущая позиция потока находится над ожогом
+            isPouringOverWound = CheckPourOverWound();
+
             AnimateToPosition(1, targetPosition);
             yield return null;
         }
@@ -95,5 +107,18 @@ public class Stream : MonoBehaviour
             yield return null;
         }
         yield return null;
+    }
+
+    private bool CheckPourOverWound()
+    {
+        RaycastHit hit;
+        Ray ray = new Ray(transform.position, Vector3.down);
+
+        if (Physics.Raycast(ray, out hit, 2.0f))
+        {
+            return hit.collider.CompareTag("BurnWoundTag");
+        }
+
+        return false;
     }
 }
